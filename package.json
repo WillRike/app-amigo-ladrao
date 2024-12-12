@@ -1,7 +1,7 @@
 {
   "name": "app-amigo-secreto",
   "version": "0.1.0",
-  "homepage": "https://github.com/WillRike/app-amigo-ladrao.git",
+  "homepage": "https://willrike.github.io/app-amigo-ladrao/",
   "private": true,
   "dependencies": {
     "cra-template": "1.2.0",
