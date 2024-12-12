@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.cc87a58f.css",
-    "main.js": "/static/js/main.f563f057.js",
-    "static/js/488.0c789900.chunk.js": "/static/js/488.0c789900.chunk.js",
-    "index.html": "/index.html",
-    "main.cc87a58f.css.map": "/static/css/main.cc87a58f.css.map",
-    "main.f563f057.js.map": "/static/js/main.f563f057.js.map",
-    "488.0c789900.chunk.js.map": "/static/js/488.0c789900.chunk.js.map"
+    "main.css": "/app-amigo-ladrao/static/css/main.cc87a58f.css",
+    "main.js": "/app-amigo-ladrao/static/js/main.e0b52777.js",
+    "static/js/488.0c789900.chunk.js": "/app-amigo-ladrao/static/js/488.0c789900.chunk.js",
+    "index.html": "/app-amigo-ladrao/index.html",
+    "main.cc87a58f.css.map": "/app-amigo-ladrao/static/css/main.cc87a58f.css.map",
+    "main.e0b52777.js.map": "/app-amigo-ladrao/static/js/main.e0b52777.js.map",
+    "488.0c789900.chunk.js.map": "/app-amigo-ladrao/static/js/488.0c789900.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.cc87a58f.css",
-    "static/js/main.f563f057.js"
+    "static/js/main.e0b52777.js"
   ]
 }
