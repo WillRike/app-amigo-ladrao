@@ -49,6 +49,38 @@ O projeto estará disponível em `http://localhost:3000`.
 
 ---
 
+## Como Fazer o Deploy no GitHub Pages 🌐
+
+### 1. Execute o Deploy
+
+```bash
+npm run deploy
+```
+
+Isso criará uma branch `gh-pages` no seu repositório e publicará o site.
+
+### 5. Acesse o Site
+
+O aplicativo estará disponível em:
+
+```
+https://willrike.github.io/app-amigo-ladrao/
+```
+
+---
+
+## Como Rodar o Build Localmente 🖥️
+
+Após criar o build com `npm run build`, você pode rodar a versão de produção localmente para testes:
+
+```bash
+npx serve -s build
+```
+
+O projeto será servido em `http://localhost:3000`.
+
+---
+
 ## Estrutura do Projeto 📂
 
 - `src/App.js`: Componente principal do aplicativo.
@@ -82,5 +114,5 @@ Este projeto está licenciado sob a MIT License. Consulte o arquivo [LICENSE](LI
 
 ---
 
-**Divirta-se com o Amigo Ladrão!** 🥳
+**Divirta-se com o App Amigo Ladrão!** 🥳
 
