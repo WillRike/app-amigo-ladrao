@@ -1,70 +1,86 @@
-# Getting Started with Create React App
+# Amigo Ladrão 🎉
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Amigo Ladrão** é uma aplicação web divertida desenvolvida em ReactJS para realizar sorteios de "amigo ladrão" de forma dinâmica e interativa. Este projeto é ideal para festas e eventos sociais onde o sorteio dos participantes é feito de forma gradual, nome a nome.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Funcionalidades 🛠️
 
-### `npm start`
+- **Adicionação de Nomes:** Adicione facilmente os nomes dos participantes no campo de entrada.
+- **Sorteio Gradual:** Sorteie os nomes um por vez, até que todos sejam sorteados.
+- **Animações Interativas:** Efeitos visuais ao sortear e ao resetar o jogo.
+- **Reset do Sorteio:** Reinicie o sorteio a qualquer momento para refazer os pares.
+- **Interface Divertida:** Uma experiência leve e amigável para todos os usuários.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Tecnologias Utilizadas 🚀
 
-### `npm test`
+- **ReactJS:** Biblioteca JavaScript para criação da interface do usuário.
+- **CSS:** Estilização responsiva e animações interativas.
+- **Git:** Controle de versão do projeto.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Como Rodar o Projeto Localmente 🖥️
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Clone o Repositório:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```bash
+git clone https://github.com/WillRike/app-amigo-ladrao.git
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 2. Instale as Dependências:
 
-### `npm run eject`
+Entre na pasta do projeto e execute:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+cd app-amigo-ladrao
+npm install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 3. Inicie o Servidor de Desenvolvimento:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+npm start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+O projeto estará disponível em `http://localhost:3000`.
 
-## Learn More
+---
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Estrutura do Projeto 📂
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- `src/App.js`: Componente principal do aplicativo.
+- `src/App.css`: Estilos personalizados e animações.
+- `public/index.html`: Estrutura base da aplicação.
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Melhorias Futuras 📝
 
-### Analyzing the Bundle Size
+- Adição de sons para eventos de sorteio.
+- Permitir a exclusão de nomes da lista antes do sorteio.
+- Compatibilidade com dispositivos móveis aprimorada.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## Contribuição 🤝
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Fique à vontade para contribuir com este projeto! Para isso:
 
-### Advanced Configuration
+1. Faça um fork do repositório.
+2. Crie uma branch para sua funcionalidade: `git checkout -b minha-feature`.
+3. Envie suas alterações: `git push origin minha-feature`.
+4. Abra um Pull Request.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## Licença 📜
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Este projeto está licenciado sob a MIT License. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**Divirta-se com o Amigo Ladrão!** 🥳
+
