@@ -6,10 +6,31 @@ const SecretFriend = () => {
   const [drawnNames, setDrawnNames] = useState([]);
   const [currentDraw, setCurrentDraw] = useState("");
 
+  const normalizeName = (name) => name.trim().toLowerCase();
+
   const addName = () => {
-    if (input.trim() && !names.includes(input)) {
-      setNames([...names, input.trim()]);
-      setInput("");
+    const normalizedInput = normalizeName(input);
+    if (!normalizedInput) {
+      return;
+    }
+
+    const isDuplicate = names.some(
+      (name) => normalizeName(name) === normalizedInput
+    );
+
+    if (isDuplicate) {
+      alert("Nome já adicionado");
+      return;
+    }
+
+    setNames([...names, input.trim()]);
+    setInput("");
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addName();
     }
   };
 
@@ -42,8 +63,11 @@ const SecretFriend = () => {
           placeholder="Digite um nome"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
-        <button onClick={addName}>Adicionar</button>
+        <button onClick={addName} disabled={!input.trim()}>
+          Adicionar
+        </button>
       </div>
 
       <div className="draw-section">
