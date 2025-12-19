@@ -12,6 +12,70 @@
   position: relative;
 }
 
+.app-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: linear-gradient(120deg, #4c6ef5, #7c3aed, #0ea5e9);
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.app-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.app-banner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle at 10% 20%, rgba(255, 214, 102, 0.35) 4px, transparent 0),
+    radial-gradient(circle at 30% 80%, rgba(239, 71, 111, 0.35) 5px, transparent 0),
+    radial-gradient(circle at 70% 30%, rgba(6, 214, 160, 0.35) 5px, transparent 0),
+    radial-gradient(circle at 90% 60%, rgba(17, 138, 178, 0.35) 4px, transparent 0);
+  background-size: 160px 160px;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.app-banner__left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 1;
+}
+
+.app-banner__image {
+  width: 64px;
+  height: auto;
+  max-width: 70px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  object-fit: cover;
+}
+
+.app-banner__title {
+  font-weight: 700;
+  font-size: 32px;
+  color: #fff;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+}
+
+.app-banner__right {
+  z-index: 1;
+}
+
 .app-header {
   margin-bottom: 20px;
 }
@@ -136,6 +200,29 @@
 
 .settings-button:focus-visible {
   outline: 2px solid #0d47a1;
+  outline-offset: 2px;
+}
+
+.settings-button--banner {
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-button--banner:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.settings-button--banner:focus-visible {
+  outline: 2px solid #c084fc;
   outline-offset: 2px;
 }
 
@@ -304,5 +391,23 @@
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@media (max-width: 600px) {
+  .app-banner {
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+  .app-banner__image {
+    width: 48px;
+    border-radius: 10px;
+  }
+  .app-banner__title {
+    font-size: 24px;
+  }
+  .settings-button--banner {
+    width: 40px;
+    height: 40px;
   }
 }

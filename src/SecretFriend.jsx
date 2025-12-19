@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import bannerImage from "./assets/amigo-ladrao.png";
 
 const STORAGE_KEYS = {
   names: "secretFriend:names",
@@ -409,18 +410,27 @@ const SecretFriend = () => {
 
   return (
     <div className="app-container">
-      <div className="settings-bar">
-        <button
-          type="button"
-          className="settings-button"
-          aria-label="Configuracoes de som"
-          onClick={() => setIsSoundSettingsOpen(true)}
-        >
-          {"\u2699"}
-        </button>
-      </div>
+      <header className="app-banner">
+        <div className="app-banner__left">
+          <img
+            src={bannerImage}
+            alt="Ilustracao Amigo Ladrao"
+            className="app-banner__image"
+          />
+          <div className="app-banner__title">Amigo Ladrao</div>
+        </div>
+        <div className="app-banner__right">
+          <button
+            type="button"
+            className="settings-button settings-button--banner"
+            aria-label="Configuracoes de som"
+            onClick={() => setIsSoundSettingsOpen(true)}
+          >
+            {"\u2699"}
+          </button>
+        </div>
+      </header>
       <header className="app-header">
-        <h1>Amigo Ladrao</h1>
         <p>Adicione os nomes e clique para sortear um por vez!</p>
       </header>
 
