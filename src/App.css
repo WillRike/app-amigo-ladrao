@@ -73,6 +73,15 @@
   animation: winnerPop 0.45s ease-in-out;
 }
 
+.game-current-card.rolling {
+  animation: rollingPulse 0.25s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+.game-current-card.winner {
+  animation: winnerPop 0.45s ease-in-out;
+}
+
 .names-list {
   margin: 20px auto;
   max-width: 400px;
@@ -208,6 +217,67 @@
   margin: 0;
   font-size: 0.9rem;
   color: #555;
+}
+
+.game-modal {
+  width: min(92vw, 520px);
+}
+
+.game-body {
+  gap: 18px;
+}
+
+.game-current {
+  text-align: center;
+}
+
+.game-current-label {
+  margin: 0 0 8px 0;
+  font-weight: 600;
+  color: #444;
+}
+
+.game-current-card {
+  background: linear-gradient(135deg, #e3f2fd, #e8f5e9);
+  border: 2px solid #2196f3;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.game-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.game-drawn-list {
+  text-align: left;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.game-drawn-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0 0;
+}
+
+.game-drawn-list li {
+  background: #f1f8ff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  border: 1px solid #d4e8ff;
 }
 
 @keyframes rollingPulse {

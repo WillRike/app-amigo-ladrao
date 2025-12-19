@@ -27,6 +27,84 @@ const loadStoredString = (key) => {
   }
 };
 
+const GameModal = ({
+  isOpen,
+  onClose,
+  onDraw,
+  isDrawing,
+  displayedName,
+  rollingName,
+  drawnNames,
+  namesLeft,
+}) => {
+  if (!isOpen) return null;
+
+  const currentText =
+    displayedName ||
+    (isDrawing ? rollingName : "Nenhum sorteado ainda. Clique em 'Sortear proximo'.");
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className="modal game-modal"
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <div className="modal-header">
+          <h3>Jogo</h3>
+          <button
+            type="button"
+            className="close-button"
+            aria-label="Fechar jogo"
+            onClick={onClose}
+          >
+            X
+          </button>
+        </div>
+        <div className="modal-body game-body">
+          <div className="game-current">
+            <p className="game-current-label">Sorteado atual</p>
+            <div
+              className={`game-current-card ${
+                isDrawing ? "rolling" : displayedName ? "winner" : ""
+              }`}
+            >
+              {currentText}
+            </div>
+          </div>
+
+          <div className="game-actions">
+            <button
+              className="draw-button"
+              onClick={onDraw}
+              disabled={namesLeft === 0 || isDrawing}
+            >
+              Sortear proximo
+            </button>
+            {namesLeft === 0 && (
+              <p className="hint">Nenhum participante restante para sortear.</p>
+            )}
+          </div>
+
+          <div className="game-drawn-list">
+            <h4>Ja sorteados</h4>
+            {drawnNames.length === 0 ? (
+              <p className="hint">Ninguem sorteado ainda.</p>
+            ) : (
+              <ul>
+                {drawnNames.map((name, index) => (
+                  <li key={`${name}-${index}`}>{name}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const SecretFriend = () => {
   const [names, setNames] = useState(() => loadStoredArray(STORAGE_KEYS.names));
   const [input, setInput] = useState("");
@@ -59,6 +137,7 @@ const SecretFriend = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [rollingName, setRollingName] = useState("");
   const [isSoundSettingsOpen, setIsSoundSettingsOpen] = useState(false);
+  const [isGameModalOpen, setIsGameModalOpen] = useState(false);
   const audioContextRef = useRef(null);
   const rollIntervalRef = useRef(null);
   const rollTimeoutRef = useRef(null);
@@ -95,6 +174,19 @@ const SecretFriend = () => {
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isSoundSettingsOpen]);
+
+  useEffect(() => {
+    if (!isGameModalOpen) return undefined;
+
+    const handleEsc = (event) => {
+      if (event.key === "Escape") {
+        setIsGameModalOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isGameModalOpen]);
 
   const normalizeName = (name) => name.trim().toLowerCase();
   const hasDrawn = drawnNames.length > 0 || Boolean(currentDraw);
@@ -284,6 +376,8 @@ const SecretFriend = () => {
     setEditingValue("");
     setSoundEnabled(true);
     setSoundVolume(0.3);
+    setIsSoundSettingsOpen(false);
+    setIsGameModalOpen(false);
   };
 
   const restartDrawKeepingParticipants = () => {
@@ -322,7 +416,7 @@ const SecretFriend = () => {
           aria-label="Configuracoes de som"
           onClick={() => setIsSoundSettingsOpen(true)}
         >
-          ⚙️
+          {"\u2699"}
         </button>
       </div>
       <header className="app-header">
@@ -346,10 +440,10 @@ const SecretFriend = () => {
       <div className="draw-section">
         <button
           className="draw-button"
-          onClick={drawName}
-          disabled={names.length === 0 || isDrawing}
+          onClick={() => setIsGameModalOpen(true)}
+          disabled={isDrawing}
         >
-          Sortear Proximo Amigo
+          {hasDrawn ? "Continuar jogo" : "Iniciar jogo"}
         </button>
         <button
           className="draw-button"
@@ -358,15 +452,6 @@ const SecretFriend = () => {
         >
           Reiniciar sorteio (manter participantes)
         </button>
-        {(displayedName || isDrawing) && (
-          <p
-            className={`current-draw ${
-              isDrawing ? "rolling" : displayedName ? "winner" : ""
-            }`}
-          >
-            Amigo atual: {displayedName || "..."}
-          </p>
-        )}
       </div>
 
       <div className="names-list">
@@ -428,7 +513,7 @@ const SecretFriend = () => {
                 aria-label="Fechar configuracoes"
                 onClick={closeSoundSettings}
               >
-                ×
+                X
               </button>
             </div>
             <div className="modal-body">
@@ -461,6 +546,17 @@ const SecretFriend = () => {
           </div>
         </div>
       )}
+
+      <GameModal
+        isOpen={isGameModalOpen}
+        onClose={() => setIsGameModalOpen(false)}
+        onDraw={drawName}
+        isDrawing={isDrawing}
+        displayedName={displayedName}
+        rollingName={rollingName}
+        drawnNames={drawnNames}
+        namesLeft={names.length}
+      />
     </div>
   );
 };
