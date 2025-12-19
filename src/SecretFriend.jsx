@@ -4,6 +4,8 @@ const STORAGE_KEYS = {
   names: "secretFriend:names",
   drawnNames: "secretFriend:drawnNames",
   currentDraw: "secretFriend:currentDraw",
+  soundEnabled: "secretFriend:soundEnabled",
+  soundVolume: "secretFriend:soundVolume",
 };
 
 const loadStoredArray = (key) => {
@@ -36,8 +38,27 @@ const SecretFriend = () => {
   );
   const [editingIndex, setEditingIndex] = useState(null);
   const [editingValue, setEditingValue] = useState("");
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.soundEnabled);
+      return stored === null ? true : stored === "true";
+    } catch (error) {
+      console.error("Erro ao carregar som habilitado", error);
+      return true;
+    }
+  });
+  const [soundVolume, setSoundVolume] = useState(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.soundVolume);
+      return stored ? Number(stored) : 0.3;
+    } catch (error) {
+      console.error("Erro ao carregar volume", error);
+      return 0.3;
+    }
+  });
   const [isDrawing, setIsDrawing] = useState(false);
   const [rollingName, setRollingName] = useState("");
+  const [isSoundSettingsOpen, setIsSoundSettingsOpen] = useState(false);
   const audioContextRef = useRef(null);
   const rollIntervalRef = useRef(null);
   const rollTimeoutRef = useRef(null);
@@ -53,6 +74,27 @@ const SecretFriend = () => {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.currentDraw, currentDraw);
   }, [currentDraw]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.soundEnabled, String(soundEnabled));
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.soundVolume, String(soundVolume));
+  }, [soundVolume]);
+
+  useEffect(() => {
+    if (!isSoundSettingsOpen) return undefined;
+
+    const handleEsc = (event) => {
+      if (event.key === "Escape") {
+        setIsSoundSettingsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [isSoundSettingsOpen]);
 
   const normalizeName = (name) => name.trim().toLowerCase();
   const hasDrawn = drawnNames.length > 0 || Boolean(currentDraw);
@@ -78,6 +120,7 @@ const SecretFriend = () => {
   };
 
   const playTickSound = () => {
+    if (!soundEnabled || soundVolume === 0) return;
     const ctx = getAudioContext();
     if (!ctx) return;
 
@@ -85,7 +128,7 @@ const SecretFriend = () => {
     const gain = ctx.createGain();
     osc.type = "square";
     osc.frequency.value = 950;
-    gain.gain.value = 0.04;
+    gain.gain.value = 0.04 * soundVolume;
     osc.connect(gain).connect(ctx.destination);
 
     const now = ctx.currentTime;
@@ -95,6 +138,7 @@ const SecretFriend = () => {
   };
 
   const playRevealSound = () => {
+    if (!soundEnabled || soundVolume === 0) return;
     const ctx = getAudioContext();
     if (!ctx) return;
 
@@ -103,7 +147,7 @@ const SecretFriend = () => {
     osc.type = "triangle";
     osc.frequency.setValueAtTime(500, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
-    gain.gain.value = 0.08;
+    gain.gain.value = 0.08 * soundVolume;
     osc.connect(gain).connect(ctx.destination);
 
     const now = ctx.currentTime;
@@ -238,6 +282,8 @@ const SecretFriend = () => {
     setInput("");
     setEditingIndex(null);
     setEditingValue("");
+    setSoundEnabled(true);
+    setSoundVolume(0.3);
   };
 
   const restartDrawKeepingParticipants = () => {
@@ -265,9 +311,20 @@ const SecretFriend = () => {
   }, []);
 
   const displayedName = isDrawing ? rollingName : currentDraw;
+  const closeSoundSettings = () => setIsSoundSettingsOpen(false);
 
   return (
     <div className="app-container">
+      <div className="settings-bar">
+        <button
+          type="button"
+          className="settings-button"
+          aria-label="Configuracoes de som"
+          onClick={() => setIsSoundSettingsOpen(true)}
+        >
+          ⚙️
+        </button>
+      </div>
       <header className="app-header">
         <h1>Amigo Ladrao</h1>
         <p>Adicione os nomes e clique para sortear um por vez!</p>
@@ -354,6 +411,56 @@ const SecretFriend = () => {
       >
         Nova sessao
       </button>
+
+      {isSoundSettingsOpen && (
+        <div className="modal-overlay" onClick={closeSoundSettings}>
+          <div
+            className="modal"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <div className="modal-header">
+              <h3>Configuracoes de Som</h3>
+              <button
+                type="button"
+                className="close-button"
+                aria-label="Fechar configuracoes"
+                onClick={closeSoundSettings}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="field-row">
+                <span>Som</span>
+                <button
+                  type="button"
+                  className="audio-toggle-btn"
+                  onClick={() => setSoundEnabled((prev) => !prev)}
+                >
+                  {soundEnabled ? "On" : "Off"}
+                </button>
+              </div>
+              <div className="field-row">
+                <label htmlFor="volume-slider">
+                  Volume: {Math.round(soundVolume * 100)}%
+                </label>
+                <input
+                  id="volume-slider"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={soundVolume}
+                  onChange={(e) => setSoundVolume(Number(e.target.value))}
+                />
+              </div>
+              <p className="hint">O volume afeta os sons do sorteio.</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
