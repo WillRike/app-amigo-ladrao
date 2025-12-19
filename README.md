@@ -91,9 +91,7 @@ O projeto será servido em `http://localhost:3000`.
 
 ## Melhorias Futuras 📝
 
-- Adição de sons para eventos de sorteio.
-- Permitir a exclusão de nomes da lista antes do sorteio.
-- Compatibilidade com dispositivos móveis aprimorada.
+- N/A
 
 ---
 
