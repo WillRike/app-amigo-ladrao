@@ -28,6 +28,32 @@ const loadStoredString = (key) => {
   }
 };
 
+const Modal = ({ isOpen, title, onClose, children, footer, widthClass }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div
+        className={`modal ${widthClass || ""}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="modal-header">
+          <h3>{title}</h3>
+          <button
+            type="button"
+            className="close-button"
+            aria-label="Fechar modal"
+            onClick={onClose}
+          >
+            X
+          </button>
+        </div>
+        <div className="modal-body">{children}</div>
+        {footer && <div className="modal-footer">{footer}</div>}
+      </div>
+    </div>
+  );
+};
+
 const GameModal = ({
   isOpen,
   onClose,
@@ -77,7 +103,7 @@ const GameModal = ({
 
           <div className="game-actions">
             <button
-              className="draw-button"
+              className="btn btn-primary btn-lg"
               onClick={onDraw}
               disabled={namesLeft === 0 || isDrawing}
             >
@@ -139,6 +165,8 @@ const SecretFriend = () => {
   const [rollingName, setRollingName] = useState("");
   const [isSoundSettingsOpen, setIsSoundSettingsOpen] = useState(false);
   const [isGameModalOpen, setIsGameModalOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [confirmModal, setConfirmModal] = useState({ type: null });
   const audioContextRef = useRef(null);
   const rollIntervalRef = useRef(null);
   const rollTimeoutRef = useRef(null);
@@ -188,6 +216,12 @@ const SecretFriend = () => {
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
   }, [isGameModalOpen]);
+
+  useEffect(() => {
+    if (!feedbackMessage) return undefined;
+    const timer = setTimeout(() => setFeedbackMessage(""), 3000);
+    return () => clearTimeout(timer);
+  }, [feedbackMessage]);
 
   const normalizeName = (name) => name.trim().toLowerCase();
   const hasDrawn = drawnNames.length > 0 || Boolean(currentDraw);
@@ -254,6 +288,7 @@ const SecretFriend = () => {
 
     const normalizedInput = normalizeName(input);
     if (!normalizedInput) {
+      setFeedbackMessage("Digite um nome valido.");
       return;
     }
 
@@ -262,12 +297,13 @@ const SecretFriend = () => {
     );
 
     if (isDuplicate) {
-      alert("Nome ja adicionado");
+      setFeedbackMessage("Este nome ja foi adicionado.");
       return;
     }
 
     setNames([...names, input.trim()]);
     setInput("");
+    setFeedbackMessage("");
   };
 
   const handleInputKeyDown = (event) => {
@@ -297,7 +333,7 @@ const SecretFriend = () => {
 
     const trimmed = editingValue.trim();
     if (!trimmed) {
-      alert("Nome nao pode ser vazio");
+      setFeedbackMessage("Nome nao pode ser vazio.");
       return;
     }
 
@@ -307,7 +343,7 @@ const SecretFriend = () => {
     );
 
     if (isDuplicate) {
-      alert("Nome ja adicionado");
+      setFeedbackMessage("Este nome ja foi adicionado.");
       return;
     }
 
@@ -316,6 +352,7 @@ const SecretFriend = () => {
     setNames(updatedNames);
     setEditingIndex(null);
     setEditingValue("");
+    setFeedbackMessage("");
   };
 
   const handleEditKeyDown = (event, index) => {
@@ -363,11 +400,6 @@ const SecretFriend = () => {
   const startNewSession = () => {
     if (isDrawing) return;
 
-    const confirmed = window.confirm(
-      "Tem certeza que deseja iniciar uma nova sessao? Isso apagara participantes e resultados."
-    );
-    if (!confirmed) return;
-
     localStorage.clear();
     setNames([]);
     setDrawnNames([]);
@@ -379,21 +411,20 @@ const SecretFriend = () => {
     setSoundVolume(0.3);
     setIsSoundSettingsOpen(false);
     setIsGameModalOpen(false);
+    setFeedbackMessage("");
+    setConfirmModal({ type: null });
   };
 
   const restartDrawKeepingParticipants = () => {
     if (!hasDrawn || isDrawing) return;
-
-    const confirmed = window.confirm(
-      "Tem certeza que deseja reiniciar o sorteio? Os participantes serao mantidos, mas os resultados serao apagados."
-    );
-    if (!confirmed) return;
 
     setNames([...names, ...drawnNames]);
     setDrawnNames([]);
     setCurrentDraw("");
     setEditingIndex(null);
     setEditingValue("");
+    setFeedbackMessage("");
+    setConfirmModal({ type: null });
   };
 
   useEffect(() => {
@@ -407,6 +438,32 @@ const SecretFriend = () => {
 
   const displayedName = isDrawing ? rollingName : currentDraw;
   const closeSoundSettings = () => setIsSoundSettingsOpen(false);
+  const openConfirmModal = (type) => setConfirmModal({ type });
+  const closeConfirmModal = () => setConfirmModal({ type: null });
+
+  const confirmModalContent = () => {
+    if (confirmModal.type === "newSession") {
+      return {
+        title: "Iniciar nova sessao",
+        message:
+          "Tem certeza que deseja iniciar uma nova sessao? Todos os participantes e resultados serao apagados.",
+        action: startNewSession,
+        primaryVariant: "danger",
+      };
+    }
+    if (confirmModal.type === "restartDraw") {
+      return {
+        title: "Reiniciar sorteio",
+        message:
+          "Deseja reiniciar o sorteio? Os participantes serao mantidos, mas os resultados serao apagados.",
+        action: restartDrawKeepingParticipants,
+        primaryVariant: "primary",
+      };
+    }
+    return null;
+  };
+
+  const confirmData = confirmModalContent();
 
   return (
     <div className="app-container">
@@ -434,127 +491,183 @@ const SecretFriend = () => {
         <p>Adicione os nomes e clique para sortear um por vez!</p>
       </header>
 
-      <div className="input-section">
-        <input
-          type="text"
-          placeholder="Digite um nome"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleInputKeyDown}
-        />
-        <button onClick={addName} disabled={!input.trim() || actionsLocked}>
-          Adicionar
-        </button>
+      <div className="layout-grid">
+        <section className="card participants-card">
+          <div className="card-header">
+            <h3>Participantes</h3>
+            <p className="muted">
+              Adicione nomes e gerencie antes de iniciar o jogo.
+            </p>
+          </div>
+          <div className="input-row">
+            <input
+              type="text"
+              placeholder="Digite um nome"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleInputKeyDown}
+              disabled={actionsLocked}
+            />
+            <button
+              className="btn btn-primary"
+              onClick={addName}
+              disabled={!input.trim() || actionsLocked}
+            >
+              Adicionar
+            </button>
+          </div>
+          {feedbackMessage && <p className="feedback">{feedbackMessage}</p>}
+          <ul className="list">
+            {names.map((name, index) => (
+              <li className="list-item" key={index}>
+                {editingIndex === index ? (
+                  <input
+                    value={editingValue}
+                    onChange={(e) => setEditingValue(e.target.value)}
+                    onBlur={() => confirmEdit(index)}
+                    onKeyDown={(event) => handleEditKeyDown(event, index)}
+                    autoFocus
+                  />
+                ) : (
+                  <span>{name}</span>
+                )}
+
+                {!actionsLocked && editingIndex !== index && (
+                  <div className="icon-actions">
+                    <button
+                      type="button"
+                      className="icon-button"
+                      onClick={() => startEditing(index)}
+                      aria-label="Editar participante"
+                      title="Editar participante"
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      type="button"
+                      className="icon-button danger"
+                      onClick={() => removeName(index)}
+                      aria-label="Remover participante"
+                      title="Remover participante"
+                    >
+                      🗑
+                    </button>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="card game-card">
+          <div className="card-header">
+            <h3>Jogo</h3>
+            <p className="muted">
+              {drawnNames.length} sorteados de {names.length + drawnNames.length}
+              . Restantes: {names.length}
+            </p>
+          </div>
+          <div className="game-cta">
+            <button
+              className="btn btn-primary btn-lg"
+              onClick={() => setIsGameModalOpen(true)}
+              disabled={isDrawing}
+            >
+              {hasDrawn ? "Continuar jogo" : "Iniciar jogo"}
+            </button>
+          </div>
+          <div className="game-actions-inline">
+            <button
+              className="btn btn-secondary"
+              onClick={() => openConfirmModal("restartDraw")}
+              disabled={!hasDrawn || isDrawing}
+            >
+              Reiniciar sorteio (manter participantes)
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={() => openConfirmModal("newSession")}
+              disabled={isDrawing}
+            >
+              Nova sessao
+            </button>
+          </div>
+        </section>
+
+        <section className="card drawn-card">
+          <div className="card-header">
+            <h3>Ja sorteados</h3>
+            <p className="muted">Acompanhamento dos nomes ja revelados.</p>
+          </div>
+          {drawnNames.length === 0 ? (
+            <p className="muted">Nenhum sorteio realizado ainda.</p>
+          ) : (
+            <ul className="list">
+              {drawnNames.map((name, index) => (
+                <li className="list-item" key={`${name}-${index}`}>
+                  <span>{name}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
-
-      <div className="draw-section">
-        <button
-          className="draw-button"
-          onClick={() => setIsGameModalOpen(true)}
-          disabled={isDrawing}
-        >
-          {hasDrawn ? "Continuar jogo" : "Iniciar jogo"}
-        </button>
-        <button
-          className="draw-button"
-          onClick={restartDrawKeepingParticipants}
-          disabled={!hasDrawn || isDrawing}
-        >
-          Reiniciar sorteio (manter participantes)
-        </button>
-      </div>
-
-      <div className="names-list">
-        <h3>Nomes adicionados:</h3>
-        <ul>
-          {names.map((name, index) => (
-            <li key={index}>
-              {editingIndex === index ? (
-                <input
-                  value={editingValue}
-                  onChange={(e) => setEditingValue(e.target.value)}
-                  onBlur={() => confirmEdit(index)}
-                  onKeyDown={(event) => handleEditKeyDown(event, index)}
-                  autoFocus
-                />
-              ) : (
-                <span>{name}</span>
-              )}
-
-              {!actionsLocked && editingIndex !== index && (
-                <>
-                  <button onClick={() => startEditing(index)}>Editar</button>
-                  <button onClick={() => removeName(index)}>Remover</button>
-                </>
-              )}
-            </li>
-          ))}
-        </ul>
-
-        <h3>Nomes sorteados:</h3>
-        <ul>
-          {drawnNames.map((name, index) => (
-            <li key={index}>{name}</li>
-          ))}
-        </ul>
-      </div>
-
-      <button
-        className="reset-button"
-        onClick={startNewSession}
-        disabled={isDrawing}
-      >
-        Nova sessao
-      </button>
 
       {isSoundSettingsOpen && (
-        <div className="modal-overlay" onClick={closeSoundSettings}>
-          <div
-            className="modal"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <div className="modal-header">
-              <h3>Configuracoes de Som</h3>
-              <button
-                type="button"
-                className="close-button"
-                aria-label="Fechar configuracoes"
-                onClick={closeSoundSettings}
-              >
-                X
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="field-row">
-                <span>Som</span>
-                <button
-                  type="button"
-                  className="audio-toggle-btn"
-                  onClick={() => setSoundEnabled((prev) => !prev)}
-                >
-                  {soundEnabled ? "On" : "Off"}
-                </button>
-              </div>
-              <div className="field-row">
-                <label htmlFor="volume-slider">
-                  Volume: {Math.round(soundVolume * 100)}%
-                </label>
-                <input
-                  id="volume-slider"
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={soundVolume}
-                  onChange={(e) => setSoundVolume(Number(e.target.value))}
-                />
-              </div>
-              <p className="hint">O volume afeta os sons do sorteio.</p>
-            </div>
+        <Modal title="Configuracoes de Som" onClose={closeSoundSettings} isOpen>
+          <div className="field-row">
+            <span>Som</span>
+            <button
+              type="button"
+              className="audio-toggle-btn"
+              onClick={() => setSoundEnabled((prev) => !prev)}
+            >
+              {soundEnabled ? "On" : "Off"}
+            </button>
           </div>
-        </div>
+          <div className="field-row">
+            <label htmlFor="volume-slider">
+              Volume: {Math.round(soundVolume * 100)}%
+            </label>
+            <input
+              id="volume-slider"
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={soundVolume}
+              onChange={(e) => setSoundVolume(Number(e.target.value))}
+            />
+          </div>
+          <p className="hint">O volume afeta os sons do sorteio.</p>
+        </Modal>
+      )}
+
+      {confirmData && (
+        <Modal
+          isOpen
+          title={confirmData.title}
+          onClose={closeConfirmModal}
+          footer={
+            <>
+              <button className="btn btn-secondary" onClick={closeConfirmModal}>
+                Cancelar
+              </button>
+              <button
+                className={`btn ${
+                  confirmData.primaryVariant === "danger"
+                    ? "btn-danger"
+                    : "btn-primary"
+                }`}
+                onClick={confirmData.action}
+              >
+                Confirmar
+              </button>
+            </>
+          }
+        >
+          <p className="muted">{confirmData.message}</p>
+        </Modal>
       )}
 
       <GameModal
